@@ -55,7 +55,7 @@ export function SiteHeader() {
   return (
     <header ref={headerRef} className="sticky top-0 z-50 border-b border-border/70 bg-background/85 backdrop-blur-md transition-all duration-300 ease-out">
       <p className="bg-primary py-2 text-center text-xs tracking-[0.2em] text-primary-foreground uppercase">
-        Livraison offerte dès 120 € · Commande facile sur WhatsApp
+        Livraison offerte dès 50.000 FCFA · Commande facile sur WhatsApp
       </p>
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 md:px-6">
         <button
@@ -122,21 +122,21 @@ export function SiteHeader() {
       {/* Mobile menu */}
       <div
         className={cn(
-          'fixed inset-0 z-50 bg-foreground/40 transition-opacity md:hidden',
+          'fixed inset-0 z-50 bg-white/95 transition-opacity md:hidden',
           open ? 'opacity-100' : 'pointer-events-none opacity-0',
         )}
         onClick={() => setOpen(false)}
       >
         <div
           className={cn(
-            'absolute top-0 left-0 h-full w-72 bg-background p-6 shadow-xl transition-transform',
+            'absolute top-0 left-0 h-full w-72 bg-white p-6 shadow-xl transition-transform',
             open ? 'translate-x-0' : '-translate-x-full',
           )}
           onClick={(e) => e.stopPropagation()}
         >
           <div className="mb-8 flex items-center justify-between">
             <span className="font-serif text-xl tracking-[0.15em]">LUMIÈRE</span>
-            <button onClick={() => setOpen(false)} aria-label="Fermer le menu">
+            <button onClick={() => setOpen(false)} aria-label="Fermer le menu" className="text-black">
               <X className="size-5" />
             </button>
           </div>
@@ -144,7 +144,7 @@ export function SiteHeader() {
             <Link
               href="/boutique"
               onClick={() => setOpen(false)}
-              className="border-b border-border/60 py-3 text-sm transition-colors duration-200 ease-out hover:text-foreground"
+              className="border-b border-black py-3 text-sm text-black transition-colors duration-200 ease-out hover:text-foreground"
             >
               Toute la boutique
             </Link>
@@ -153,7 +153,7 @@ export function SiteHeader() {
                 key={c.id}
                 href={`/boutique?cat=${c.slug}`}
                 onClick={() => setOpen(false)}
-                className="border-b border-border/60 py-3 text-sm transition-colors duration-200 ease-out hover:text-foreground"
+                className="border-b border-black py-3 text-sm text-black transition-colors duration-200 ease-out hover:text-foreground"
               >
                 {c.name}
               </Link>
@@ -161,7 +161,7 @@ export function SiteHeader() {
             <Link
               href="/contact"
               onClick={() => setOpen(false)}
-              className="border-b border-border/60 py-3 text-sm transition-colors duration-200 ease-out hover:text-foreground"
+              className="border-b border-black py-3 text-sm text-black transition-colors duration-200 ease-out hover:text-foreground"
             >
               Contact
             </Link>
