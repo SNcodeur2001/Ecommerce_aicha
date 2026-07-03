@@ -93,7 +93,7 @@ export function SiteHeader() {
               </span>
             )}
           </Link>
-        </div>
+</div>
       </div>
 
       {/* ================= MOBILE MENU ================= */}
@@ -134,7 +134,7 @@ export function SiteHeader() {
               <Link
                 href="/boutique"
                 onClick={() => setOpen(false)}
-                className="flex h-14 items-center border-b border-black/10 text-[15px] font-light tracking-wide hover:text-black"
+                className="flex h-14 items-center border-b border-black/10 text-[15px] font-semibold tracking-wide hover:text-black"
               >
                 Toute la boutique
               </Link>
@@ -144,7 +144,7 @@ export function SiteHeader() {
                   key={c.id}
                   href={`/boutique?cat=${c.slug}`}
                   onClick={() => setOpen(false)}
-                  className="flex h-14 items-center border-b border-black/10 text-[15px] font-light tracking-wide hover:text-black"
+                  className="flex h-14 items-center border-b border-black/10 text-[15px] font-semibold tracking-wide hover:text-black"
                 >
                   {c.name}
                 </Link>
@@ -153,7 +153,7 @@ export function SiteHeader() {
               <Link
                 href="/contact"
                 onClick={() => setOpen(false)}
-                className="flex h-14 items-center border-b border-black/10 text-[15px] font-light tracking-wide hover:text-black"
+                className="flex h-14 items-center border-b border-black/10 text-[15px] font-semibold tracking-wide hover:text-black"
               >
                 Contact
               </Link>
