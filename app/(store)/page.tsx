@@ -1,7 +1,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { ArrowRight, Quote } from 'lucide-react'
-import { brands, categories, products } from '@/lib/data'
+import { getBrands, getCategories, getProducts } from '@/lib/api'
 import { ProductCard } from '@/components/store/product-card'
 import { Newsletter } from '@/components/store/newsletter'
 import { RatingStars } from '@/components/store/rating-stars'
@@ -21,7 +21,12 @@ const testimonials = [
   },
 ]
 
-export default function HomePage() {
+export default async function HomePage() {
+  const [products, categories, brands] = await Promise.all([
+    getProducts(),
+    getCategories(),
+    getBrands(),
+  ])
   const newArrivals = products.filter((p) => p.isNew).slice(0, 4)
   const bestSellers = products.filter((p) => p.bestSeller).slice(0, 4)
   const onSale = products.filter((p) => p.onSale)
@@ -30,7 +35,7 @@ export default function HomePage() {
     <>
       {/* Hero */}
       <section className="relative">
-        <div className="relative h-[78vh] min-h-[520px] w-full overflow-hidden">
+        <div className="relative w-full overflow-hidden animate-fade-in" style={{ height: `calc(100vh - var(--site-header-height, 5rem))`, minHeight: '520px' }}>
           <Image
             src="/products/hero.png"
             alt="Collection de lingerie fine Lumière"
@@ -42,7 +47,7 @@ export default function HomePage() {
           <div className="absolute inset-0 bg-gradient-to-r from-foreground/40 via-foreground/10 to-transparent" />
           <div className="absolute inset-0 flex items-center">
             <div className="mx-auto flex w-full max-w-7xl px-4 md:px-6">
-              <div className="max-w-lg text-background">
+              <div className="max-w-lg text-background animate-fade-up">
                 <p className="text-xs font-semibold tracking-[0.25em] uppercase">
                   Nouvelle collection · Été 2026
                 </p>
@@ -83,8 +88,8 @@ export default function HomePage() {
         </div>
         <div className="grid grid-cols-2 gap-4 md:grid-cols-5">
           {categories.map((c) => (
-            <Link key={c.id} href={`/boutique?cat=${c.slug}`} className="group">
-              <div className="relative aspect-[3/4] overflow-hidden rounded-lg bg-muted">
+            <Link key={c.id} href={`/boutique?cat=${c.slug}`} className="group animate-fade-up">
+              <div className="relative aspect-[3/4] overflow-hidden rounded-lg bg-muted transition-all duration-500 ease-out group-hover:-translate-y-1 group-hover:shadow-lg">
                 <Image
                   src={c.image || '/placeholder.svg'}
                   alt={c.name}
@@ -179,7 +184,9 @@ export default function HomePage() {
         </div>
         <div className="grid grid-cols-2 gap-x-4 gap-y-8 md:grid-cols-4">
           {bestSellers.map((p) => (
-            <ProductCard key={p.id} product={p} />
+            <div key={p.id} className="animate-fade-up">
+              <ProductCard product={p} />
+            </div>
           ))}
         </div>
       </section>
@@ -196,7 +203,7 @@ export default function HomePage() {
           {brands.map((b) => (
             <div
               key={b.id}
-              className="flex flex-col gap-3 rounded-lg border border-border bg-card p-6 text-center"
+              className="flex flex-col gap-3 rounded-lg border border-border bg-card p-6 text-center transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-md"
             >
               <span className="font-serif text-xl">{b.name}</span>
               <p className="text-xs leading-relaxed text-muted-foreground">{b.description}</p>
@@ -218,7 +225,7 @@ export default function HomePage() {
             {testimonials.map((t) => (
               <figure
                 key={t.name}
-                className="flex flex-col gap-4 rounded-lg border border-border bg-card p-8"
+                className="flex flex-col gap-4 rounded-lg border border-border bg-card p-8 transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-md"
               >
                 <Quote className="size-6 text-gold" />
                 <blockquote className="text-sm leading-relaxed text-foreground">

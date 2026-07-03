@@ -3,7 +3,8 @@
 import { useMemo, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { SlidersHorizontal, X } from 'lucide-react'
-import { products, categories, brands, allSizes, allColors } from '@/lib/data'
+import { allSizes, allColors } from '@/lib/data'
+import type { Brand, Category, Product } from '@/lib/types'
 import { ProductCard } from './product-card'
 import { cn } from '@/lib/utils'
 import {
@@ -23,7 +24,15 @@ const priceBands = [
 
 type Sort = 'featured' | 'price-asc' | 'price-desc' | 'newest' | 'rating'
 
-export function Catalog() {
+export function Catalog({
+  products,
+  categories,
+  brands,
+}: {
+  products: Product[]
+  categories: Category[]
+  brands: Brand[]
+}) {
   const params = useSearchParams()
   const initialCat = params.get('cat') ?? ''
 

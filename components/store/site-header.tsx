@@ -1,10 +1,11 @@
 'use client'
 
 import Link from 'next/link'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { Heart, Menu, Search, ShoppingBag, X } from 'lucide-react'
 import { useCart, useWishlist } from '@/lib/store'
-import { categories } from '@/lib/data'
+import { getCategories } from '@/lib/api'
+import type { Category } from '@/lib/types'
 import { cn } from '@/lib/utils'
 
 const navLinks = [
@@ -12,19 +13,47 @@ const navLinks = [
   { href: '/boutique?cat=ensembles', label: 'Ensembles' },
   { href: '/boutique?cat=nuisettes', label: 'Nuisettes' },
   { href: '/boutique?cat=mariee', label: 'Mariée' },
-  { href: '/a-propos', label: 'Maison' },
 ]
 
 export function SiteHeader() {
   const [mounted, setMounted] = useState(false)
   const [open, setOpen] = useState(false)
+  const [categories, setCategories] = useState<Category[]>([])
   const cartCount = useCart((s) => s.items.reduce((n, i) => n + i.quantity, 0))
   const wishCount = useWishlist((s) => s.ids.length)
 
-  useEffect(() => setMounted(true), [])
+  // Measure header height and expose as CSS variable --site-header-height
+  const headerRef = useRef<HTMLElement | null>(null)
+
+  useEffect(() => {
+    setMounted(true)
+
+    async function loadCategories() {
+      const categories = await getCategories()
+      setCategories(categories)
+    }
+
+    loadCategories()
+
+    function updateHeaderHeight() {
+      const h = headerRef.current?.getBoundingClientRect().height || 0
+      document.documentElement.style.setProperty('--site-header-height', `${Math.round(h)}px`)
+    }
+
+    updateHeaderHeight()
+
+    const ro = new ResizeObserver(updateHeaderHeight)
+    if (headerRef.current) ro.observe(headerRef.current)
+    window.addEventListener('resize', updateHeaderHeight)
+
+    return () => {
+      ro.disconnect()
+      window.removeEventListener('resize', updateHeaderHeight)
+    }
+  }, [])
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border/70 bg-background/85 backdrop-blur-md">
+    <header ref={headerRef} className="sticky top-0 z-50 border-b border-border/70 bg-background/85 backdrop-blur-md transition-all duration-300 ease-out">
       <p className="bg-primary py-2 text-center text-xs tracking-[0.2em] text-primary-foreground uppercase">
         Livraison offerte dès 120 € · Commande facile sur WhatsApp
       </p>
@@ -42,7 +71,7 @@ export function SiteHeader() {
             <Link
               key={l.label}
               href={l.href}
-              className="text-sm text-foreground/80 transition-colors hover:text-foreground"
+              className="text-sm text-foreground/80 transition-all duration-200 ease-out hover:-translate-y-0.5 hover:text-foreground"
             >
               {l.label}
             </Link>
@@ -62,7 +91,7 @@ export function SiteHeader() {
               <Link
                 key={l.label}
                 href={l.href}
-                className="text-sm text-foreground/80 transition-colors hover:text-foreground"
+                className="text-sm text-foreground/80 transition-all duration-200 ease-out hover:-translate-y-0.5 hover:text-foreground"
               >
                 {l.label}
               </Link>
@@ -115,7 +144,7 @@ export function SiteHeader() {
             <Link
               href="/boutique"
               onClick={() => setOpen(false)}
-              className="border-b border-border/60 py-3 text-sm"
+              className="border-b border-border/60 py-3 text-sm transition-colors duration-200 ease-out hover:text-foreground"
             >
               Toute la boutique
             </Link>
@@ -124,22 +153,15 @@ export function SiteHeader() {
                 key={c.id}
                 href={`/boutique?cat=${c.slug}`}
                 onClick={() => setOpen(false)}
-                className="border-b border-border/60 py-3 text-sm"
+                className="border-b border-border/60 py-3 text-sm transition-colors duration-200 ease-out hover:text-foreground"
               >
                 {c.name}
               </Link>
             ))}
             <Link
-              href="/a-propos"
-              onClick={() => setOpen(false)}
-              className="border-b border-border/60 py-3 text-sm"
-            >
-              La Maison
-            </Link>
-            <Link
               href="/contact"
               onClick={() => setOpen(false)}
-              className="border-b border-border/60 py-3 text-sm"
+              className="border-b border-border/60 py-3 text-sm transition-colors duration-200 ease-out hover:text-foreground"
             >
               Contact
             </Link>

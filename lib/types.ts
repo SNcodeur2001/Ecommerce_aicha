@@ -95,3 +95,20 @@ export type Customer = {
   totalSpent: number
   joined: string
 }
+
+export type Notification = {
+  id: string
+  title: string
+  message: string
+  type: 'stock' | 'order' | 'review' | 'system'
+  read: boolean
+  date: string
+}
+
+export type StoreSettings = {
+  id: string
+  storeName: string
+  whatsappNumber: string
+  currency: string
+  deliveryNote: string
+}

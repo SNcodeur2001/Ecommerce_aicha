@@ -8,8 +8,6 @@ import type {
   Review,
 } from './types'
 
-export const WHATSAPP_NUMBER = '15550000000' // placeholder — replace with the real number
-
 export const categories: Category[] = [
   {
     id: 'c1',

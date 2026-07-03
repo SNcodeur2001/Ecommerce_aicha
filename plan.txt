@@ -1,0 +1,130 @@
+# Plan Pas-À-Pas: Boutique Client Puis Backoffice JSON Server
+
+## Résumé
+On avance en 3 grandes étapes: d’abord rendre le front client fiable et complet, ensuite centraliser les données dans `db.json` avec JSON Server, puis construire le dashboard admin CRUD branché sur cette API mock déployable sur Render.
+
+Le projet reste en **Next.js App Router** avec TypeScript, Tailwind, Zustand et les composants UI existants. On ne bascule pas vers Vite/React Router, car la base actuelle est déjà Next.js.
+
+## Phase 1: Front Client Fonctionnel
+- Installer l’environnement local puis vérifier `lint` et `build`.
+- Auditer toutes les routes client existantes: accueil, boutique, produit, favoris, panier, à propos, contact.
+- Corriger les liens cassés du footer en ajoutant les pages manquantes: `/livraison`, `/retours`, `/faq`, `/blog`.
+- Remplacer le numéro WhatsApp placeholder par une variable d’environnement, avec fallback local documenté.
+- Vérifier le parcours complet:
+  - recherche, filtres, tri et pagination catalogue;
+  - aperçu rapide produit;
+  - sélection taille/couleur/quantité;
+  - ajout panier;
+  - favoris;
+  - lien WhatsApp produit;
+  - lien WhatsApp panier;
+  - états vide, épuisé, mobile et desktop.
+- Améliorer seulement ce qui bloque ou nuit au parcours client; pas de grosse refonte visuelle dans cette phase.
+
+### Ce qui reste dans Phase 1
+- Migrer `/favoris` pour qu’il utilise les produits via l’API JSON Server au lieu de `lib/data.ts`.
+- Remplacer dans le header toute dépendance directe à `lib/data.ts` (catégories statiques) par une source API ou un menu construit depuis `db.json`.
+- Vérifier toutes les routes client en navigation réelle pour détecter d’éventuelles 404 et corriger les liens restants.
+- Tester la persistance panier/favoris après refresh sur différents navigateurs.
+- Vérifier la logique produit épuisé dans `/produit/[slug]` et la commande WhatsApp correspondante.
+
+## Phase 2: Données Et JSON Server
+- Créer un `db.json` central avec les ressources: `products`, `categories`, `brands`, `customers`, `orders`, `reviews`, `promotions`, `wishlist`, `notifications`, et éventuellement `settings`.
+- Faire de `db.json` la source principale des mocks.
+- Ajouter les scripts nécessaires:
+  - lancement Next.js;
+  - lancement JSON Server local;
+  - lancement combiné si utile.
+- Créer une petite couche API côté front pour lire/écrire les données depuis JSON Server.
+- Migrer progressivement les lectures front depuis `lib/data.ts` vers l’API JSON Server sans casser les pages existantes.
+- Préparer le déploiement Render pour JSON Server avec une URL configurable par variable d’environnement.
+
+### Ce qui reste dans Phase 2
+- Confirmer que le front n’utilise plus que `lib/api.ts` pour les données dynamiques, sans fallback statique inutile.
+- Tester `pnpm dev:api` puis `pnpm dev:all` et valider que les deux services coexistent.
+- Ajouter une documentation ou un `.env.example` mentionnant `NEXT_PUBLIC_JSON_SERVER_URL` et `NEXT_PUBLIC_WHATSAPP_NUMBER`.
+- Vérifier que Render peut consommer `db.json` via `render.yaml` et que l’URL JSON Server est configurable.
+
+## Phase 3: Backoffice Dashboard
+- Ajouter une zone `/admin` séparée du front boutique, avec layout dashboard: sidebar, topbar, navigation, état actif.
+- Construire une première version CRUD mock complète branchée sur JSON Server:
+  - overview avec KPI, commandes récentes, alertes stock bas;
+  - produits: liste, création, édition, suppression, images, prix, stock, catégories, marques, tailles, couleurs, featured, promo;
+  - catégories: CRUD;
+  - marques: CRUD;
+  - commandes: liste, détail, changement de statut, référence WhatsApp;
+  - clientes: liste, profil, historique commandes;
+  - promotions: CRUD, pourcentage, activation;
+  - inventaire: stock bas, rupture, édition rapide;
+  - avis: liste, publication/modération.
+- Garder l’auth admin hors v1 sauf écran placeholder/login mock si nécessaire pour la navigation.
+
+### Ce qui reste dans Phase 3
+- Valider que toutes les pages admin utilisent `lib/api.ts` et JSON Server, pas de données en dur.
+- Vérifier la création/édition/suppression sur `/admin/produits`, `/admin/categories`, `/admin/marques`, `/admin/promotions`, `/admin/avis`.
+- Tester le changement de statut sur `/admin/commandes` et la persistance sur JSON Server.
+- Vérifier l’overview `/admin` pour les KPI et alertes stock bas en temps réel.
+- Confirmer que les modifications admin apparaissent côté boutique après refresh.
+
+## Tests Et Validation
+- Validation technique:
+  - `pnpm install`;
+  - `pnpm lint`;
+  - `pnpm build`;
+  - test local Next.js + JSON Server.
+- Validation client:
+  - aucun lien footer/header ne mène à une 404;
+  - commande WhatsApp produit contient nom, taille, couleur, prix;
+  - commande WhatsApp panier contient articles, quantités et total;
+  - panier/favoris persistent après refresh;
+  - catalogue fonctionne sur mobile et desktop.
+- Validation dashboard:
+  - chaque CRUD crée, lit, modifie et supprime dans JSON Server;
+  - les statuts de commande changent correctement;
+  - les stocks bas apparaissent dans l’overview;
+  - les changements admin sont visibles côté boutique après refresh/API reload.
+
+### Ce qui reste à valider
+- Exécuter `pnpm lint` et `pnpm build` pour détecter les erreurs actuelles.
+- Parcourir les pages client et admin en local avec JSON Server actif.
+- Vérifier que le panier et les favoris persistent après reload et que les commandes WhatsApp sont générées correctement.
+- Valider que les changements d’admin sont reflétés côté boutique.
+
+## Hypothèses Verrouillées
+- Priorité immédiate: **audit + fixes du front client**.
+- Données: **`db.json` central** comme source mock principale.
+- Dashboard: **CRUD mock complet** via JSON Server.
+- Déploiement JSON Server: **Render** par défaut.
+- WhatsApp: configuration par **variable d’environnement**.
+- Le style actuel “Lumière” est conservé; on corrige et complète avant de refaire le design.
+
+## Prochaines étapes immédiates
+- Libérer ou changer le port local pour pouvoir relancer `npm run dev`.
+- Corriger les erreurs de compilation existantes, en commençant par les imports `lucide-react` cassés.
+- Lancer `pnpm lint` puis `pnpm build` et corriger les erreurs remontées.
+- Activer JSON Server avec `pnpm dev:api` puis valider la connexion du front avec `lib/api.ts`.
+- Tester `pnpm dev:all` pour vérifier le fonctionnement simultané du front et de JSON Server.
+- Documenter les variables d’environnement essentielles dans un fichier `./.env.example`.
+
+## Priorités restantes
+1. Front client
+   - Migrer la page `/favoris` vers l’API JSON Server.
+   - Supprimer les imports de `lib/data.ts` du header et du catalogue quand ils ne sont plus nécessaires.
+   - Valider tous les liens client et corriger les 404.
+   - Réaliser un audit UX rapide sur panier, favoris, produit épuisé et mobile.
+
+2. JSON Server
+   - S’assurer que `db.json` contient toutes les ressources nécessaires.
+   - S’assurer que `lib/api.ts` est la seule couche dynamique pour les données.
+   - Vérifier que `render.yaml` déploie bien JSON Server et supporte la variable `NEXT_PUBLIC_JSON_SERVER_URL`.
+
+3. Backoffice admin
+   - Confirmer que l’admin lit et écrit toutes les ressources via JSON Server.
+   - Tester CRUD, statuts de commande et alertes de stock.
+   - Valider que les changements admin apparaissent dans le front commercial après refresh.
+
+4. Validation
+   - Faire un premier passage `pnpm install`, `pnpm lint`, `pnpm build`.
+   - Tester le parcours commercial complet avec JSON Server actif.
+   - Confirmer que panier/favoris persistent après rafraîchissement.
+   - Vérifier que l’ordre WhatsApp contient bien les détails demandés.

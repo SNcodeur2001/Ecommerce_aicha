@@ -4,13 +4,27 @@ import Link from 'next/link'
 import { useState, useEffect } from 'react'
 import { Heart } from 'lucide-react'
 import { useWishlist } from '@/lib/store'
-import { products } from '@/lib/data'
+import { getProducts } from '@/lib/api'
+import type { Product } from '@/lib/types'
+import { productOrderLink } from '@/lib/whatsapp'
 import { ProductCard } from '@/components/store/product-card'
+import { WhatsAppIcon } from '@/components/store/whatsapp-icon'
 
 export default function WishlistPage() {
   const ids = useWishlist((s) => s.ids)
   const [mounted, setMounted] = useState(false)
-  useEffect(() => setMounted(true), [])
+  const [products, setProducts] = useState<Product[]>([])
+
+  useEffect(() => {
+    setMounted(true)
+
+    async function loadProducts() {
+      const products = await getProducts()
+      setProducts(products)
+    }
+
+    loadProducts()
+  }, [])
 
   const wished = products.filter((p) => ids.includes(p.id))
 
@@ -45,7 +59,23 @@ export default function WishlistPage() {
       ) : (
         <div className="mt-8 grid grid-cols-2 gap-x-4 gap-y-8 lg:grid-cols-4">
           {wished.map((p) => (
-            <ProductCard key={p.id} product={p} />
+            <div key={p.id} className="flex flex-col gap-3">
+              <ProductCard product={p} />
+              <a
+                href={productOrderLink({
+                  name: p.name,
+                  size: p.sizes[0],
+                  color: p.colors[0]?.name ?? '',
+                  price: p.price,
+                })}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex h-10 items-center justify-center gap-2 rounded-md bg-[#25D366] px-3 text-xs font-medium tracking-[0.05em] text-white uppercase transition-opacity hover:opacity-90"
+              >
+                <WhatsAppIcon className="size-4" />
+                Commander
+              </a>
+            </div>
           ))}
         </div>
       )}

@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { Instagram, Facebook, Truck, RefreshCw, ShieldCheck, MessageCircle } from 'lucide-react'
+import { Globe, Share2, Truck, RefreshCw, ShieldCheck, MessageCircle } from 'lucide-react'
 
 const columns = [
   {
@@ -21,9 +21,8 @@ const columns = [
     ],
   },
   {
-    title: 'La Maison',
+    title: 'Compte',
     links: [
-      { href: '/a-propos', label: 'À propos' },
       { href: '/blog', label: 'Journal' },
       { href: '/boutique', label: 'Nouveautés' },
       { href: '/favoris', label: 'Mes favoris' },
@@ -62,17 +61,17 @@ export function SiteFooter() {
             <div className="mt-6 flex gap-3">
               <Link
                 href="#"
-                aria-label="Instagram"
+                aria-label="Site"
                 className="flex size-9 items-center justify-center rounded-full border border-border transition-colors hover:bg-background"
               >
-                <Instagram className="size-4" />
+                <Globe className="size-4" />
               </Link>
               <Link
                 href="#"
-                aria-label="Facebook"
+                aria-label="Partager"
                 className="flex size-9 items-center justify-center rounded-full border border-border transition-colors hover:bg-background"
               >
-                <Facebook className="size-4" />
+                <Share2 className="size-4" />
               </Link>
             </div>
           </div>

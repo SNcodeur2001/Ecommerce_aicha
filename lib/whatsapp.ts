@@ -1,8 +1,18 @@
-import { WHATSAPP_NUMBER } from './data'
 import type { CartItem } from './store'
 
+const WHATSAPP_NUMBER =
+  process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ||
+  process.env.NEXT_PUBLIC_STORE_WHATSAPP ||
+  '15550000000'
+
 function formatPrice(n: number) {
-  return `${n} €`
+  // Prices in the data are stored as EUR amounts (e.g. 89 -> €89).
+  // Convert to XOF (FCFA) for display using an exchange rate.
+  const rate = parseFloat(process.env.NEXT_PUBLIC_EXCHANGE_RATE || '655.957') || 655.957
+  const converted = Math.round(n * rate)
+
+  // Format with french thousands separator and append FCFA
+  return new Intl.NumberFormat('fr-FR').format(converted) + ' FCFA'
 }
 
 export function productOrderLink(opts: {

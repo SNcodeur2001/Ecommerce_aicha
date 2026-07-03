@@ -2,12 +2,12 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { ChevronRight, Truck, RefreshCw, ShieldCheck } from 'lucide-react'
 import {
-  getProductBySlug,
-  getReviewsForProduct,
-  getRelatedProducts,
-  brands,
-  products,
-} from '@/lib/data'
+  getBrands,
+  getProductBySlugFromApi,
+  getProducts,
+  getRelatedProductsFromApi,
+  getReviewsForProductFromApi,
+} from '@/lib/api'
 import { formatPrice } from '@/lib/whatsapp'
 import { RatingStars } from '@/components/store/rating-stars'
 import { ProductGallery } from '@/components/store/product-gallery'
@@ -22,7 +22,8 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion'
 
-export function generateStaticParams() {
+export async function generateStaticParams() {
+  const products = await getProducts()
   return products.map((p) => ({ slug: p.slug }))
 }
 
@@ -32,12 +33,13 @@ export default async function ProductPage({
   params: Promise<{ slug: string }>
 }) {
   const { slug } = await params
-  const product = getProductBySlug(slug)
+  const product = await getProductBySlugFromApi(slug)
   if (!product) notFound()
 
+  const brands = await getBrands()
   const brand = brands.find((b) => b.slug === product.brandSlug)
-  const reviews = getReviewsForProduct(product.id)
-  const related = getRelatedProducts(product)
+  const reviews = await getReviewsForProductFromApi(product.id)
+  const related = await getRelatedProductsFromApi(product)
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
