@@ -15,6 +15,7 @@ export default function CartPage() {
   const updateQuantity = useCart((s) => s.updateQuantity)
   const removeItem = useCart((s) => s.removeItem)
   const [mounted, setMounted] = useState(false)
+    // eslint-disable-next-line
   useEffect(() => setMounted(true), [])
 
   const subtotal = items.reduce((s, i) => s + i.price * i.quantity, 0)

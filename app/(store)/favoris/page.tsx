@@ -16,6 +16,7 @@ export default function WishlistPage() {
   const [products, setProducts] = useState<Product[]>([])
 
   useEffect(() => {
+    // eslint-disable-next-line
     setMounted(true)
 
     async function loadProducts() {

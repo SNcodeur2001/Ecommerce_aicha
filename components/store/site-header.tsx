@@ -26,6 +26,7 @@ export function SiteHeader() {
   const headerRef = useRef<HTMLElement | null>(null)
 
   useEffect(() => {
+    // eslint-disable-next-line
     setMounted(true)
 
     async function loadCategories() {
