@@ -6,7 +6,7 @@ import { toast } from 'sonner'
 import type { Product } from '@/lib/types'
 import { useCart, useWishlist } from '@/lib/store'
 import { productOrderLink } from '@/lib/whatsapp'
-import { cn } from '@/lib/utils'
+import { cn, normalizeImages } from '@/lib/utils'
 import { WhatsAppIcon } from './whatsapp-icon'
 
 export function ProductPurchase({
@@ -16,6 +16,7 @@ export function ProductPurchase({
   product: Product
   compact?: boolean
 }) {
+  const images = normalizeImages(product.images)
   const [size, setSize] = useState(product.sizes[0])
   const [color, setColor] = useState(product.colors[0]?.name ?? '')
   const [qty, setQty] = useState(1)
@@ -37,7 +38,7 @@ export function ProductPurchase({
       productId: product.id,
       name: product.name,
       slug: product.slug,
-      image: product.images[0],
+      image: images[0],
       price: product.price,
       size,
       color,

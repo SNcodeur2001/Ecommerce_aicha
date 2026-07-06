@@ -4,6 +4,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import type { Product } from '@/lib/types'
 import { formatPrice } from '@/lib/whatsapp'
+import { normalizeImages } from '@/lib/utils'
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
 import { RatingStars } from './rating-stars'
 import { ProductPurchase } from './product-purchase'
@@ -17,13 +18,14 @@ export function QuickView({
   open: boolean
   onOpenChange: (v: boolean) => void
 }) {
+  const images = normalizeImages(product.images)
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-3xl sm:max-w-3xl p-0 overflow-hidden">
         <div className="grid gap-0 md:grid-cols-2">
           <div className="relative aspect-[3/4] bg-muted">
             <Image
-              src={product.images[0] || '/placeholder.svg'}
+              src={images[0] || '/placeholder.svg'}
               alt={product.name}
               fill
               sizes="(max-width: 768px) 100vw, 384px"

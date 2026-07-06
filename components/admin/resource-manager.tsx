@@ -1,5 +1,6 @@
 'use client'
 
+import { cn, normalizeImages } from '@/lib/utils'
 import type React from 'react'
 import { useMemo, useState } from 'react'
 import { Edit, Plus, RefreshCw, Save, Trash2, X } from 'lucide-react'
@@ -16,10 +17,11 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { ImageUploader } from '@/components/admin/image-uploader'
 
 export type ResourceItem = Record<string, unknown> & { id: string }
 
-type FieldType = 'text' | 'number' | 'boolean' | 'textarea' | 'csv' | 'colors'
+type FieldType = 'text' | 'number' | 'boolean' | 'textarea' | 'csv' | 'colors' | 'image'
 
 export type ResourceField = {
   key: string
@@ -47,6 +49,10 @@ function fieldToInputValue(value: unknown, type: FieldType) {
     return value.join(', ')
   }
 
+  if (type === 'image' && Array.isArray(value)) {
+    return value.join(', ')
+  }
+
   if (type === 'colors' && Array.isArray(value)) {
     return value
       .map((item) => {
@@ -66,7 +72,7 @@ function fieldToInputValue(value: unknown, type: FieldType) {
   return value == null ? '' : String(value)
 }
 
-function parseFieldValue(value: string, type: FieldType) {
+function parseFieldValue(value: unknown, type: FieldType) {
   if (type === 'number') {
     return Number(value) || 0
   }
@@ -76,14 +82,28 @@ function parseFieldValue(value: string, type: FieldType) {
   }
 
   if (type === 'csv') {
-    return value
+    return String(value)
+      .split(',')
+      .map((item) => item.trim())
+      .filter(Boolean)
+  }
+
+  if (type === 'image') {
+    if (Array.isArray(value)) {
+      return value
+        .filter((item): item is string => typeof item === 'string')
+        .map((item) => item.trim())
+        .filter(Boolean)
+    }
+
+    return String(value)
       .split(',')
       .map((item) => item.trim())
       .filter(Boolean)
   }
 
   if (type === 'colors') {
-    return value
+    return String(value)
       .split(',')
       .map((item) => item.trim())
       .filter(Boolean)
@@ -93,7 +113,7 @@ function parseFieldValue(value: string, type: FieldType) {
       })
   }
 
-  return value
+  return value == null ? '' : String(value)
 }
 
 function compactValue(value: unknown) {
@@ -138,7 +158,7 @@ export function ResourceManager({
 }) {
   const [items, setItems] = useState<ResourceItem[]>(initialItems)
   const [editing, setEditing] = useState<ResourceItem | null>(null)
-  const [draft, setDraft] = useState<Record<string, string>>({})
+  const [draft, setDraft] = useState<Record<string, string | string[]>>({})
   const [saving, setSaving] = useState(false)
 
   const formTitle = editing ? 'Modifier' : 'Ajouter'
@@ -344,6 +364,11 @@ export function ResourceManager({
                     <option value="true">Oui</option>
                     <option value="false">Non</option>
                   </select>
+                ) : type === 'image' ? (
+                  <ImageUploader
+                    onUpload={(urls) => setDraft((current) => ({ ...current, [field.key]: urls }))}
+                    existingUrls={normalizeImages(draft[field.key])}
+                  />
                 ) : (
                   <Input
                     id={`${resource}-${field.key}`}

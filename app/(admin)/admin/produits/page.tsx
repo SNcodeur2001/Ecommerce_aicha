@@ -31,7 +31,7 @@ export default async function AdminProductsPage() {
         { key: 'description', label: 'Description', type: 'textarea' },
         { key: 'material', label: 'Matière' },
         { key: 'care', label: 'Entretien', type: 'textarea' },
-        { key: 'images', label: 'Images', type: 'csv', placeholder: '/products/image.png, /products/autre.png' },
+        { key: 'images', label: 'Images', type: 'image' },
         { key: 'categorySlug', label: 'Catégorie slug' },
         { key: 'brandSlug', label: 'Marque slug' },
         { key: 'sizes', label: 'Tailles', type: 'csv', placeholder: 'XS, S, M, L' },

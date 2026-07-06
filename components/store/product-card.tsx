@@ -6,7 +6,7 @@ import { useState } from 'react'
 import { Eye, Heart } from 'lucide-react'
 import type { Product } from '@/lib/types'
 import { useWishlist } from '@/lib/store'
-import { cn } from '@/lib/utils'
+import { cn, normalizeImages } from '@/lib/utils'
 import { formatPrice } from '@/lib/whatsapp'
 import { RatingStars } from './rating-stars'
 import { QuickView } from './quick-view'
@@ -17,13 +17,14 @@ export function ProductCard({ product }: { product: Product }) {
   const [quickOpen, setQuickOpen] = useState(false)
   const isWished = ids.includes(product.id)
   const outOfStock = product.stock === 0
+  const images = normalizeImages(product.images)
 
   return (
     <div className="group flex flex-col">
       <div className="relative aspect-[3/4] overflow-hidden rounded-lg bg-muted">
         <Link href={`/produit/${product.slug}`}>
           <Image
-            src={product.images[0] || '/placeholder.svg'}
+            src={images[0] || '/placeholder.svg'}
             alt={product.name}
             fill
             sizes="(max-width: 768px) 50vw, 25vw"

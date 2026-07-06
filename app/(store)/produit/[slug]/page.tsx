@@ -9,6 +9,7 @@ import {
   getReviewsForProductFromApi,
 } from '@/lib/api'
 import { formatPrice } from '@/lib/whatsapp'
+import { normalizeImages } from '@/lib/utils'
 import { RatingStars } from '@/components/store/rating-stars'
 import { ProductGallery } from '@/components/store/product-gallery'
 import { ProductPurchase } from '@/components/store/product-purchase'
@@ -40,6 +41,7 @@ export default async function ProductPage({
   const brand = brands.find((b) => b.slug === product.brandSlug)
   const reviews = await getReviewsForProductFromApi(product.id)
   const related = await getRelatedProductsFromApi(product)
+  const images = normalizeImages(product.images)
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
@@ -57,7 +59,7 @@ export default async function ProductPage({
       </nav>
 
       <div className="mt-6 grid gap-10 lg:grid-cols-2 lg:gap-16">
-        <ProductGallery images={product.images} name={product.name} />
+        <ProductGallery images={images} name={product.name} />
 
         <div className="flex flex-col">
           {brand && (
