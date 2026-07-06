@@ -8,6 +8,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { toast } from 'sonner'
+import { createReview } from '@/lib/api'
 
 export function ProductReviews({
   productId,
@@ -21,33 +22,40 @@ export function ProductReviews({
   const [title, setTitle] = useState('')
   const [rating, setRating] = useState(5)
   const [comment, setComment] = useState('')
+  const [submitting, setSubmitting] = useState(false)
 
   const count = reviews.length
   const average =
     count > 0 ? reviews.reduce((s, r) => s + r.rating, 0) / count : 0
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!name.trim() || !comment.trim()) {
       toast.error('Veuillez remplir tous les champs.')
       return
     }
-    const review: Review = {
-      id: `r-${Date.now()}`,
+    setSubmitting(true)
+    const reviewPayload = {
       productId,
       author: name.trim(),
       rating,
       title: title.trim() || 'Avis',
       comment: comment.trim(),
       date: new Date().toISOString(),
-      status: 'published',
+      status: 'published' as const,
     }
-    setReviews((prev) => [review, ...prev])
-    setName('')
-    setTitle('')
-    setComment('')
-    setRating(5)
-    toast.success('Merci pour votre avis !')
+    const saved = await createReview(reviewPayload)
+    if (saved) {
+      setReviews((prev) => [saved, ...prev])
+      setName('')
+      setTitle('')
+      setComment('')
+      setRating(5)
+      toast.success('Merci pour votre avis !')
+    } else {
+      toast.error('Impossible d\'enregistrer votre avis. Réessayez plus tard.')
+    }
+    setSubmitting(false)
   }
 
   return (
@@ -142,7 +150,9 @@ export function ProductReviews({
                 placeholder="Partagez votre expérience..."
               />
             </div>
-            <Button type="submit">Publier mon avis</Button>
+            <Button type="submit" disabled={submitting}>
+              {submitting ? 'Publication...' : 'Publier mon avis'}
+            </Button>
           </div>
         </form>
       </div>

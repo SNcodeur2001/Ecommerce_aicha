@@ -100,3 +100,23 @@ export async function getAdminData() {
 }
 
 export { API_URL }
+
+export async function createReview(review: Omit<Review, 'id'> & { id?: string }) {
+  try {
+    const response = await fetch('/api/reviews', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(review),
+    })
+
+    if (!response.ok) {
+      throw new Error('Failed to create review')
+    }
+
+    return (await response.json()) as Review
+  } catch {
+    return null
+  }
+}
