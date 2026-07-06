@@ -3,9 +3,8 @@ services:
     name: lumiere-json-server
     env: node
     plan: free
-    buildCommand: pnpm install --frozen-lockfile
-    startCommand: pnpm exec json-server --watch db.json --port $PORT --host 0.0.0.0
+    buildCommand: npm install
+    startCommand: npm exec json-server --watch db.json --port $PORT --host 0.0.0.0
     envVars:
       - key: NODE_VERSION
         value: 22
-
